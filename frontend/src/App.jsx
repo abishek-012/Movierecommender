@@ -6,11 +6,22 @@ function App() {
   const [movie, setMovie] = useState("");
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const funnyErrors = [
+    "We searched everywhere… even under the popcorn 🍿",
+    "Plot twist! We couldn’t find that movie 🎭",
+    "That movie vanished into the multiverse 🌌 Try something else again!"
+  ];
+
 
   const fetchRecommendations = async () => {
     if (!movie.trim()) return;
     
     setLoading(true);
+    setError("");
+    setRecommendations([]);
+
     try {
       const response = await fetch(
         `https://movierecommender-c17q.onrender.com/recommend?movie=${encodeURIComponent(movie)}`
@@ -20,7 +31,7 @@ function App() {
       if (data.recommendations) {
         setRecommendations(data.recommendations);
       } else {
-        alert(data.error || "Failed to fetch recommendations");
+        setError(funnyErrors[Math.floor(Math.random() * funnyErrors.length)] || "Movie Not Found");
       }
     } catch (error) {
       alert("Failed to connect to the server");
@@ -72,6 +83,12 @@ function App() {
             </button>
           </div>
         </div>
+
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
 
         {recommendations.length > 0 && (
           <section className="recommendations-section" aria-label="Movie recommendations">
