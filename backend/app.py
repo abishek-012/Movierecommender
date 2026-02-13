@@ -44,6 +44,7 @@ df = df.dropna().reset_index(drop=True)
 df["combined"] = df['genres'] + ' ' + df['keywords'] + ' ' + df['overview'] + ' ' + df['cast'] + ' ' + df['director']
 
 data = df[["title", "combined"]].copy()
+data["normalized_title"] = data["title"].str.lower().str.replace("-", " ", regex=False)
 
 stop_words = set(stopwords.words('english'))
 
@@ -67,7 +68,7 @@ cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 # ===============================
 
 def recommend_movies(movie_name, top_n=5):
-    idx = data[data['title'].str.lower() == movie_name.lower()].index
+    idx = data[data['normalized_title'] == movie_name.lower()].index
     if len(idx) == 0:
         return None
     idx = idx[0]
